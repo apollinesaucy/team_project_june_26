@@ -27,7 +27,7 @@ vardegree <- NULL
 varper <- c(50,90)
 
 # SPECIFICATION OF THE LAG FUNCTION
-lag <- 5
+lag <- 3
 lagnk <- 2
 
 ncoef <- length(varper) + ifelse(varfun=="bs",vardegree,1)
@@ -55,7 +55,7 @@ dlist<- split(lookup$`BFS Gde-nummer`, lookup$`Bezirks-nummer`)
 
 firststage<-list()
 cp_list <- list()
-coefall <- matrix(NA, nrow=length(dlist), ncol=9)
+coefall <- matrix(NA, nrow=length(dlist), ncol=12)
 vcovall <- list()
 
 
@@ -101,7 +101,8 @@ spldoy <- onebasis(datafull$doy, "ns", df=3)
 
 argvar <- list(fun="ns", knots=quantile(datafull$tmean, c(50,90)/100, na.rm=T),
                Boundary.knots=range(datafull$tmean)) #Ana suggested inckuding two knots
-arglag <- list(fun="ns", knots=2) # to discuss this but I think that it is reasonable (or maybe we can use the strata fuction)
+# arglag <- list(fun="ns", knots=2) # to discuss this but I think that it is reasonable (or maybe we can use the strata fuction)
+arglag <- list(fun="integer") # to discuss this but I think that it is reasonable (or maybe we can use the strata fuction)
 
 datafull$group <- factor(paste(datafull$muncode, datafull$year, sep="-"))
 group <- factor(paste(datafull$muncode, datafull$year, sep="-"))
@@ -136,9 +137,11 @@ vcovall[[i]] <-  cp_list[[i]]$vcov
 #Store coefficients and variance-covariance matrices
 firststage <-list(coefall=coefall, vcovall=vcovall)
 
-pdf(paste0("firststageplots_bydistricts.pdf"))
+pdf(paste0("01_exposure_response_functions/firststageplots_bydistricts_3ays.pdf"))
 for(x in 1:length(cp_list)){
+  if(!is.na(cp_list[[x]][1])){
   plot(cp_list[[x]], "overall")
+  }
 }
 dev.off()
 #
